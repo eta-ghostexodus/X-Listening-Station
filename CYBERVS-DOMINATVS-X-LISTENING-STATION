@@ -1,0 +1,407 @@
+CYBERVS DOMINATVS X LISTENING STATION
+by GhostExodus
+
+CYBERVS DOMINATVS X LISTENING STATION is a Windows desktop OSINT application designed to monitor selected X accounts, preserve findings locally, search collected material, document investigative observations, and gradually build a larger archive over time.
+
+It operates through an authenticated X browser session rather than requiring the investigator to paste browser cookies directly into the application.
+
+1. Target-account monitoring
+
+You can add X usernames as monitored sources.
+
+For each source, the application can collect and organize:
+
+Original posts
+Replies written by the monitored account
+Reposts or retweets
+Comments and replies made by other users
+Visible timestamps
+Post URLs
+Engagement information displayed by X
+Media references where available
+
+Each monitored account becomes a searchable source inside the application.
+
+2. Live Feed
+
+The Live Feed displays content collected from the accounts you are monitoring.
+
+You can filter the feed using checkboxes, allowing you to show or hide:
+
+Posts
+Replies
+Reposts
+Third-party comments
+
+You can also select an individual source to view only that account’s collected activity.
+
+The local feed is separate from the live X website. It is a preserved investigative dataset built from completed collection sweeps.
+
+3. Open the real post or thread
+
+Every captured post, reply, repost or comment can be opened directly on X.
+
+The Open Real Thread function launches the actual post inside the application’s authenticated X browser session.
+
+This allows you to:
+
+Read the complete conversation
+Review surrounding replies
+See newer engagement
+Confirm the current state of the post
+Compare the live thread with the locally preserved record
+
+This is useful because a local finding may remain in the database even if the live post is later changed, deleted or restricted.
+
+4. Keyword searching
+
+The application can search across the content it has collected.
+
+Searches can cover:
+
+Post text
+Replies
+Reposts
+Comments
+Usernames
+Display names
+Investigative notes
+
+This allows you to identify references to names, organizations, locations, phrases, hashtags, events or other investigative terms.
+
+The application searches the local archive, so previously collected material remains searchable without repeatedly loading the same pages from X.
+
+5. Search presets
+
+Reusable search presets can be created for recurring investigative topics.
+
+A preset can contain:
+
+One or more keywords
+Exact phrases
+Search terms associated with a case
+Selected monitored accounts
+Content-type restrictions
+
+Presets can use matching behavior such as:
+
+Match any term
+Match all terms
+
+This makes it possible to repeatedly run the same investigative query without rebuilding it every time.
+
+Example preset:
+
+Terms:
+"fundraiser"
+"donation"
+"crypto"
+"wallet"
+
+Sources:
+Selected monitored accounts
+
+Mode:
+Match any term
+6. Investigative notes
+
+Analyst notes can be attached directly to individual findings.
+
+A note can document:
+
+Why the post is relevant
+Connections to another person or account
+Identity assessments
+Timeline observations
+Unverified hypotheses
+Follow-up actions
+Evidentiary concerns
+Links to external research
+
+Notes can be edited or deleted later.
+
+There is also a dedicated Analyst Notes workspace where notes can be reviewed and searched across the investigation.
+
+This keeps the investigator’s interpretation separate from the original captured content.
+
+7. Followers and following extraction
+
+The application can collect accounts appearing in a target’s:
+
+Followers list
+Following list
+
+For each visible account, it can retain information such as:
+
+Username
+Display name
+Biography text
+Profile image reference
+Profile URL
+Which monitored account the relationship came from
+Whether the account was a follower or followed account
+
+The application can extract either list separately or run both.
+
+8. Clickable follower and following records
+
+Follower and following results are interactive entities.
+
+You can open a profile by clicking:
+
+The account avatar
+Display name
+Username
+Open Profile button
+
+The profile opens inside the authenticated X session, allowing you to inspect the real account immediately.
+
+This avoids manually copying usernames from the extracted dataset back into a browser.
+
+9. Follower and following search
+
+Extracted network records can be searched locally by:
+
+Username
+Display name
+Biography
+Relationship type
+Source account
+
+This can help locate:
+
+Shared organizations
+Geographic references
+Repeated slogans
+Occupation terms
+Political or ideological keywords
+Suspicious naming patterns
+Accounts linked to multiple monitored targets
+10. Manual collection sweeps
+
+A manual sweep instructs the application to check the monitored sources immediately.
+
+During a sweep, it loads the relevant X profile areas, scrolls through the visible timeline and extracts supported content.
+
+The application then:
+
+Normalizes the collected records.
+Compares them against the local database.
+Rejects duplicates.
+Stores newly discovered findings.
+Updates the Live Feed.
+Applies configured search presets.
+
+Manual sweeps are useful when actively monitoring an event or newly added account.
+
+11. Automatic sweeps
+
+Automatic sweeps can be enabled under System settings.
+
+The default interval is approximately every 30 minutes, although the interval can be changed.
+
+Automatic sweeps focus primarily on newer activity, such as:
+
+New posts
+Recent replies
+Reposts
+Newly visible comments
+
+They run only while the desktop application is open.
+
+12. Incremental historical archive
+
+The Incremental Archive system is designed to gradually attempt deeper collection without requesting the maximum possible depth in a single operation.
+
+It can progressively work through:
+
+Older posts
+Older replies
+Additional followers
+Additional following accounts
+
+Each archive cycle performs one bounded task and then rotates to another task.
+
+For one monitored account, a typical rotation might be:
+
+Attempt to collect older posts and replies
+Attempt to collect more followers
+Attempt to collect more following accounts
+Return to older posts and replies
+
+With multiple monitored accounts, the application rotates across the accounts and collection categories.
+
+This creates a gradually expanding local archive rather than repeatedly collecting only the newest material.
+
+13. Progressive depth
+
+The application tracks collection depth for each archive operation.
+
+For example:
+
+A profile may initially be collected using a small number of scroll passes.
+A later archive cycle uses additional scroll passes.
+Future cycles attempt to reach further down the timeline.
+Previously collected results are discarded as duplicates.
+Only newly discovered records are added.
+
+The same approach applies to follower and following lists.
+
+This does not guarantee a complete account history. X may limit how far back a timeline or network list can be loaded.
+
+14. Deduplication
+
+Collected findings are deduplicated before being saved.
+
+The application uses identifiers and record details to avoid repeatedly storing the same:
+
+Post
+Reply
+Repost
+Comment
+Follower
+Following account
+
+Deduplication allows the archive to grow over time without filling the database with repeated copies of the same records.
+
+15. Local evidence preservation
+
+The application stores its investigative dataset locally on the user’s computer.
+
+That includes:
+
+Monitored sources
+Captured posts
+Replies
+Reposts
+Comments
+Search presets
+Analyst notes
+Followers
+Following records
+Archive progress
+Application settings
+
+This means the collected archive is not dependent on a cloud dashboard controlled by a third party.
+
+It also means the operator is responsible for protecting the computer and stored investigation data.
+
+16. JSON export
+
+Search results and collected findings can be exported to JSON.
+
+JSON is useful for:
+
+Preserving structured evidence
+Importing data into another application
+Writing custom analysis scripts
+Building entity graphs
+Comparing archives
+Creating case-management integrations
+
+JSON exports can retain individual fields rather than reducing the result to a visual report.
+
+17. PDF reports
+
+Findings can also be exported as formatted PDF reports.
+
+Reports can include:
+
+Application branding
+Source accounts
+Post content
+Timestamps
+URLs
+Content type
+Search context
+Investigative notes
+
+PDF exports are useful for human-readable case files, briefings or handoff documentation.
+
+A PDF export should still be treated as an investigative report, not automatic proof that every statement contained in a captured post is true.
+
+18. CSV network export
+
+Follower and following records can be exported as CSV.
+
+This is useful for:
+
+Spreadsheet analysis
+Sorting and filtering
+Comparing account networks
+Importing into graph tools
+Identifying repeated accounts
+Building relationship matrices
+19. Authenticated X browser session
+
+The application provides a dedicated browser window for signing into X.
+
+The general workflow is:
+
+Open System.
+Select Connect or Reopen X.
+Sign into X normally.
+Close the X window.
+Run collection operations from the application.
+
+The authenticated browser partition is then reused for profile viewing, thread viewing and collection.
+
+This is more straightforward than manually copying session cookies into configuration fields.
+
+20. Challenge and restriction handling
+
+If X presents a login challenge, verification page or temporary restriction, the application is designed to stop rather than attempt to bypass the control.
+
+The investigator may need to reopen the X session and complete any required action manually.
+
+The tool does not guarantee uninterrupted access. X can change its interface, loading behavior, authentication requirements or rate controls at any time.
+
+21. Desktop application architecture
+
+The application is built with:
+
+Electron
+React
+TypeScript
+Vite
+
+Electron provides the Windows desktop shell and authenticated browser environment.
+
+React and TypeScript provide the application interface, feed management, search tools, presets and investigation workspaces.
+
+The application can be run from source or compiled into a Windows installer.
+
+22. Standard investigation workflow
+
+A practical workflow would be:
+
+Sign into a dedicated research account.
+Add one or more target usernames.
+Choose which content types to collect.
+Run an initial sweep.
+Review the Live Feed.
+Open relevant posts in their real threads.
+Attach analyst notes to important findings.
+Create keyword presets for the investigation.
+Extract followers and following.
+Search the network results.
+Enable automatic sweeps for new activity.
+Enable Incremental Archive for gradual historical collection.
+Export selected findings to JSON, CSV or PDF.
+Preserve the exported files with case identifiers and hashes where appropriate.
+23. What it does not guarantee
+
+The application cannot guarantee:
+
+A complete historical copy of every X profile
+Every reply in every conversation
+Every follower or following account
+Access to protected or restricted content
+Access to deleted posts
+Continuous collection while the application is closed
+Permanent compatibility with future X interface changes
+That collected statements are factually accurate
+That an X account belongs to the person it claims to represent
+
+Collected material should be corroborated before being used as an evidentiary conclusion.
+
