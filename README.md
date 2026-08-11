@@ -6,6 +6,8 @@ This is a Twitter/X scraper for SOCMINT/OSINT and intelligence with an easy to n
 
 *** DO NOT USE YOUR OWN TWITTER/X ACCOUNT. USE AN ALTERNATE ACCOUNT ***
 
+<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/b12cdae9-0232-4142-ae7b-12c329fdb8a7" />
+
 ### v3.4.1 avatar repair
 This release corrects a v3.4.0 profile-avatar selector that could capture the signed-in X account avatar instead of the monitored target avatar. On first launch after upgrading, the application invalidates the affected local avatar cache, recovers independently observed avatar URLs where available, and performs a one-time live refresh of monitored target profile images. Existing collected records are preserved.
 
