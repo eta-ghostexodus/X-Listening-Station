@@ -2,7 +2,7 @@
 
 **by GhostExodus · v3.4.1**
 
-This is a Twitter/X scraper for SOCMINT/OSINT and intelligence with an easy to navigate GUI, no API required. Designed for monitoring X accounts, building historical archives over time, mapping follower networks, scraping replies and posts, detecting common connections, highlighting intelligence indicators, preserving evidence, and managing multi-campaign investigations. Comes with a built-in dedicated Chromium browser. Login to your X/Twitter account, and you're connected. It's that simple.
+This is a Twitter/X scraper for SOCMINT/OSINT and intelligence with an easy to navigate GUI, no API required. Designed for monitoring X accounts, building historical archives over time, mapping follower networks, scraping replies, posts, retweets, and 3rd-party posts, detecting common connections, highlighting intelligence indicators, preserving evidence, and managing multi-campaign investigations. Comes with a built-in dedicated Chromium browser. Login to your X/Twitter account, and you're connected. It's that simple.
 
 *** DO NOT USE YOUR OWN TWITTER/X ACCOUNT. USE AN ALTERNATE ACCOUNT ***
 
@@ -15,6 +15,11 @@ Example showing relationship tree between entities
 Keywork/phrase search by creating keyword presets to scan posts and replies.
 <img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/18e4ec59-a5a8-46fb-97dc-2e89d63bef5a" />
 
+Export findings to .json or .pdf 
+<img width="2559" height="1528" alt="image" src="https://github.com/user-attachments/assets/55b75689-30ac-43fe-9ac2-ece7a0134200" />
+
+Automatically log any changes so you you can track updates made by X Listener
+<img width="2559" height="1526" alt="image" src="https://github.com/user-attachments/assets/06a44940-63d6-4e63-bdaa-47edb27122e9" />
 
 ### v3.4.1 avatar repair
 This release corrects a v3.4.0 profile-avatar selector that could capture the signed-in X account avatar instead of the monitored target avatar. On first launch after upgrading, the application invalidates the affected local avatar cache, recovers independently observed avatar URLs where available, and performs a one-time live refresh of monitored target profile images. Existing collected records are preserved.
