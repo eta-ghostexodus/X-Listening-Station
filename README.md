@@ -2,11 +2,19 @@
 
 **by GhostExodus · v3.4.1**
 
-This is a Twitter/X scraper for SOCMINT/OSINT and intelligence with an easy to navigate GUI, no API required. Designed for monitoring X accounts, building historical archives over time, mapping follower networks, detecting common connections, highlighting intelligence indicators, preserving evidence, and managing multi-campaign investigations. Comes with a built-in dedicated Chromium browser. Login to your X/Twitter account, and you're connected. It's that simple.
+This is a Twitter/X scraper for SOCMINT/OSINT and intelligence with an easy to navigate GUI, no API required. Designed for monitoring X accounts, building historical archives over time, mapping follower networks, scraping replies and posts, detecting common connections, highlighting intelligence indicators, preserving evidence, and managing multi-campaign investigations. Comes with a built-in dedicated Chromium browser. Login to your X/Twitter account, and you're connected. It's that simple.
 
 *** DO NOT USE YOUR OWN TWITTER/X ACCOUNT. USE AN ALTERNATE ACCOUNT ***
 
+To begin, add a username to monitor in the Target Sources section:
+<img width="1280" height="763" alt="image" src="https://github.com/user-attachments/assets/fd0f1222-4c54-4e81-b56f-a52027e2a372" />
+
+Example showing relationship tree between entities
 <img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/b12cdae9-0232-4142-ae7b-12c329fdb8a7" />
+
+Keywork/phrase search by creating keyword presets to scan posts and replies.
+<img width="1280" height="764" alt="image" src="https://github.com/user-attachments/assets/18e4ec59-a5a8-46fb-97dc-2e89d63bef5a" />
+
 
 ### v3.4.1 avatar repair
 This release corrects a v3.4.0 profile-avatar selector that could capture the signed-in X account avatar instead of the monitored target avatar. On first launch after upgrading, the application invalidates the affected local avatar cache, recovers independently observed avatar URLs where available, and performs a one-time live refresh of monitored target profile images. Existing collected records are preserved.
