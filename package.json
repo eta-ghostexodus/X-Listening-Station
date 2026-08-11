@@ -1,0 +1,96 @@
+{
+  "name": "cybervs-dominatvs-x-listening-station",
+  "version": "3.4.1",
+  "private": true,
+  "description": "Enterprise CYBERVS DOMINATVS X Listening Station by GhostExodus with integrated Tor, crash-safe background collection, cached X identity avatars throughout the interface, neon relationship mapping, multi-campaign monitoring, archival, entity extraction, change intelligence, evidence provenance, analyst notes, and JSON/PDF/CSV reporting.",
+  "main": "electron/main.cjs",
+  "author": "GhostExodus / CYBERVS DOMINATVS",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "npm run prepare:tor && npm run validate:page-scripts && npm run test:enterprise && npm run test:v3.1 && npm run test:v3.2 && npm run test:v3.3 && npm run test:v3.4 && node scripts/dev.mjs",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "validate:page-scripts": "node scripts/validate-page-scripts.mjs",
+    "test:enterprise": "node scripts/test-enterprise.mjs",
+    "test:v3.1": "node scripts/test-v3.1.mjs",
+    "test:v3.2": "node scripts/test-v3.2.mjs",
+    "test:release": "node scripts/test-release-layout.mjs",
+    "check": "node --check electron/main.cjs && node --check electron/preload.cjs && node --check electron/enterprise.cjs && node --check scripts/prepare-tor.mjs && npm run validate:page-scripts && npm run test:enterprise && npm run test:v3.1 && npm run test:v3.2 && npm run test:v3.3 && npm run test:v3.4 && npm run test:release && tsc --noEmit",
+    "dist:win": "npm run prepare:tor && npm run check && npm run build && electron-builder --win nsis --x64",
+    "prepare:tor": "node scripts/prepare-tor.mjs",
+    "test:v3.3": "node scripts/test-v3.3.mjs",
+    "test:v3.4": "node scripts/test-v3.4.mjs"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "@vitejs/plugin-react": "6.0.4",
+    "electron": "43.2.0",
+    "electron-builder": "26.0.0",
+    "typescript": "5.9.3",
+    "vite": "8.1.5"
+  },
+  "build": {
+    "appId": "com.xlisteningstation.desktop",
+    "productName": "CYBERVS DOMINATVS X Listening Station",
+    "artifactName": "CYBERVS-DOMINATVS-X-Listening-Station-Enterprise-Setup-${version}-${arch}.${ext}",
+    "asar": true,
+    "npmRebuild": false,
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "build/icon.png",
+      "build/icon.ico",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "executableName": "CYBERVS DOMINATVS X Listening Station"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CYBERVS DOMINATVS X Listening Station",
+      "uninstallDisplayName": "CYBERVS DOMINATVS X Listening Station by GhostExodus",
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
+    },
+    "extraResources": [
+      {
+        "from": "vendor/tor-bundle",
+        "to": "tor-bundle",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "build/icon.ico",
+        "to": "app-icon.ico"
+      }
+    ]
+  }
+}

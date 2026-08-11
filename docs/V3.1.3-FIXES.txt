@@ -1,0 +1,15 @@
+CYBERVS DOMINATVS X LISTENING STATION ENTERPRISE v3.1.3
+
+RELIABILITY / INSTALLER CHANGES
+- Native Windows MSI is now the primary installer target.
+- NSIS Setup.exe remains available as a secondary installer.
+- Portable .exe remains available as a fallback.
+- An unpacked application build is generated for direct runtime testing.
+- Added an Electron bootstrap entry that logs before main.cjs is loaded.
+- Bootstrap failures are written to %%TEMP%%\CYBERVS-X-Listening-Station-bootstrap.log.
+- Main BrowserWindow now starts visible rather than waiting on ready-to-show.
+- Added TEST_UNPACKED_APP.bat to distinguish installer problems from application runtime problems.
+- Added WINDOWS_LAUNCH_DIAGNOSTIC.bat. It only reads diagnostic state; it does not disable Defender or create exclusions.
+- Added OPEN_BOOTSTRAP_LOG.bat.
+
+The existing v3.1 campaign, presets, Tor, media collection, enterprise network, case migration, and evidence features remain present.

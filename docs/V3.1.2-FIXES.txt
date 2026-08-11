@@ -1,0 +1,28 @@
+CYBERVS DOMINATVS X LISTENING STATION ENTERPRISE v3.1.2
+
+WINDOWS STARTUP / INSTALLER RELIABILITY FIXES
+
+1. Tor restore no longer blocks the application window from opening.
+   If Tor was enabled previously, X traffic is fail-closed immediately and
+   Tor verification continues in the background after the UI appears.
+
+2. Tor proxying is isolated to the persistent X browser session.
+   The Electron application shell/default session is not routed through Tor.
+
+3. The main window has three visibility paths:
+   - ready-to-show
+   - did-finish-load
+   - five-second fallback
+   This prevents a hidden window if ready-to-show is missed.
+
+4. Startup diagnostics are written to:
+   %APPDATA%\X Listening Station\startup.log
+
+5. OPEN_STARTUP_LOG.bat opens that log for troubleshooting.
+
+6. The Windows builder now creates both:
+   - Standard NSIS Setup.exe
+   - Portable x64 .exe fallback
+
+7. The build helper opens Explorer with the generated Setup.exe selected
+   instead of depending on an automatic installer launch.

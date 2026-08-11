@@ -1,0 +1,22 @@
+CYBERVS DOMINATVS X LISTENING STATION — ENTERPRISE v3.4.1
+
+Recommended release validation:
+
+1. node --check electron/main.cjs
+2. node --check electron/preload.cjs
+3. node --check electron/enterprise.cjs
+4. npm run validate:page-scripts
+5. npm run test:enterprise
+6. npm run test:v3.1
+7. npm run test:v3.2
+8. npm run test:v3.3
+9. npm run test:v3.4
+10. npm run test:release
+11. npm run typecheck
+12. npm run build
+13. npm run dist:win (on Windows for the standard NSIS installer)
+
+The v3.1 regression test verifies Campaign IPC, preset highlighting wiring, Tor fail-closed routing, media IPC, the virtualized-network MutationObserver collector, and the relevant preload surface.
+
+
+The v3.4 regression test verifies the destroyed-BrowserWindow lifecycle fix, packaged runtime icon path, route-ready X login guard, target-scoped avatar selection, one-time v3.4.0 avatar-cache migration/repair, local avatar cache/IPC, global avatar rendering hooks, neon relationship mapping, and 100-node graph capacity.

@@ -1,0 +1,48 @@
+CYBERVS DOMINATVS X LISTENING STATION — ENTERPRISE v3.4.1
+
+Core source:
+  src/main.tsx
+  src/styles.css
+  src/global.d.ts
+  electron/main.cjs
+  electron/preload.cjs
+  electron/enterprise.cjs
+
+Configuration/build:
+  package.json
+  tsconfig.json
+  vite.config.mjs
+  index.html
+  build/
+  public/
+  assets/
+
+Validation/development:
+  scripts/dev.mjs
+  scripts/prepare-tor.mjs
+  scripts/validate-page-scripts.mjs
+  scripts/test-enterprise.mjs
+  scripts/test-v3.1.mjs
+  scripts/test-v3.2.mjs
+  scripts/test-v3.3.mjs
+  scripts/test-v3.4.mjs
+  scripts/test-release-layout.mjs
+
+Windows helper:
+  INSTALL_WINDOWS.bat
+
+Documentation:
+  README.md
+  README-FIRST.txt
+  docs/
+  LICENSE
+  .gitignore
+
+Generated/Excluded from source archives:
+  node_modules/
+  dist/
+  release/
+  vendor/tor-bundle/ (downloaded and verified at build time)
+  authenticated session/cookies
+  campaign investigation data
+  evidence-media archive

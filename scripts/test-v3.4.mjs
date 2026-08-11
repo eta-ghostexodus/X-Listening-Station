@@ -1,0 +1,41 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const main = fs.readFileSync(new URL('../electron/main.cjs', import.meta.url), 'utf8');
+const preload = fs.readFileSync(new URL('../electron/preload.cjs', import.meta.url), 'utf8');
+const enterprise = fs.readFileSync(new URL('../electron/enterprise.cjs', import.meta.url), 'utf8');
+const renderer = fs.readFileSync(new URL('../src/main.tsx', import.meta.url), 'utf8');
+const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+
+assert.equal(pkg.version, '3.4.1');
+assert(main.includes('const remoteWebContentsId = win.webContents.id;'), 'hidden X window must capture webContents id before destruction');
+assert(main.includes("win.once('closed', () => mediaPolicyByWebContents.delete(remoteWebContentsId));"), 'closed handler must not dereference destroyed webContents');
+assert(!main.includes("mediaPolicyByWebContents.delete(win.webContents.id)"), 'destroyed webContents regression must remain fixed');
+assert(main.includes('runtimeIconPath()'));
+assert(Array.isArray(pkg.build.extraResources) && pkg.build.extraResources.some((x) => x.to === 'app-icon.ico'), 'runtime Windows icon must be unpacked beside app resources');
+assert(main.includes('ensureXRouteReadyForLogin'));
+assert(main.includes('getAvatarDataUrl'));
+assert(main.includes("handle('avatars:get-data-url', getAvatarDataUrl)"));
+assert(preload.includes('getAvatarDataUrl'));
+assert(renderer.includes('IdentityAvatar'));
+assert(renderer.includes('SvgIdentityAvatar'));
+assert(renderer.includes('NEON_GRAPH_COLORS'));
+assert(renderer.includes('avatarFor(post.username)'));
+assert(renderer.includes('sourceAvatarUrl={avatarFor(post.sourceUsername)}'), 'post cards must show monitored-source avatars when a third-party identity is collected');
+assert(renderer.includes('preferredUrl={selectedNetworkProfile.avatar || avatarFor(selectedNetworkProfile.username)}'), 'selected target summary must show an avatar');
+assert(renderer.includes('preferredUrl={avatarFor(e.sourceUsername)}'), 'network delta source target must show an avatar');
+assert(enterprise.includes('.slice(0, 100)'), 'relationship graph backend must supply up to 100 common identities');
+assert(enterprise.includes("avatar: p.avatar || ''") && enterprise.includes("avatar: x.avatar || ''"), 'relationship graph nodes must carry known avatar URLs');
+assert(css.includes('#ff1744') || renderer.includes('#ff1744'));
+assert(css.includes('.identity-avatar'));
+
+assert(main.includes("document.querySelectorAll('main a[href]')"), 'profile avatar lookup must be scoped to the target profile header');
+assert(main.includes("url.pathname.toLowerCase() === '/' + currentUsername + '/photo'"), 'profile avatar lookup must match the current target profile photo route');
+assert(!main.includes("Array.from(document.querySelectorAll('img[src*=\"profile_images\"]'))"), 'profile metadata must not use the first document-wide avatar');
+assert(main.includes('migrateAvatarDataIfNeeded'));
+assert(main.includes("await fs.rm(path.join(app.getPath('userData'), 'avatar-cache'), { recursive: true, force: true });"), 'upgrade must invalidate contaminated avatar cache');
+assert(main.includes('repairExistingProfileAvatars'));
+assert(main.includes('scheduleAvatarRepair'));
+assert(main.includes('await getAvatarDataUrl(profile.username, metadata.avatar, true);'), 'monitored profile avatars must be force-refreshed after migration');
+console.log('v3.4.1 crash/icon/avatar-repair/neon/login regression tests passed.');

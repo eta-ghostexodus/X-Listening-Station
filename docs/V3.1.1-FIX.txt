@@ -1,0 +1,18 @@
+CYBERVS DOMINATVS X LISTENING STATION ENTERPRISE v3.1.2
+
+Build correction release.
+
+Fixed strict TypeScript Array.map callback incompatibility in:
+- Command Board -> Recent Collection
+- Live Feed
+- Analyst Notes
+
+renderPost(post, highlight?) has a boolean second parameter. Passing renderPost directly to Array.map caused the numeric array index to be supplied as that second parameter. All affected call sites now use explicit callbacks:
+
+  .map((post) => renderPost(post))
+
+Search intentionally retains:
+
+  .map((post) => renderPost(post, true))
+
+A regression assertion now rejects future direct .map(renderPost) usage.
