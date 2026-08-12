@@ -21,6 +21,8 @@ Export findings to .json or .pdf
 Automatically log any changes so you you can track updates made by X Listener
 <img width="2559" height="1526" alt="image" src="https://github.com/user-attachments/assets/06a44940-63d6-4e63-bdaa-47edb27122e9" />
 
+DEPENDENCY: The app requires Node.js in order to build/package/compile the app. You can download Node.js from the official site here: https://nodejs.org/en/download
+
 ### v3.4.1 avatar repair
 This release corrects a v3.4.0 profile-avatar selector that could capture the signed-in X account avatar instead of the monitored target avatar. On first launch after upgrading, the application invalidates the affected local avatar cache, recovers independently observed avatar URLs where available, and performs a one-time live refresh of monitored target profile images. Existing collected records are preserved.
 
