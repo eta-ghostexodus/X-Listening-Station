@@ -6,6 +6,8 @@ This is a Twitter/X scraper for SOCMINT/OSINT and intelligence with an easy to n
 
 *** DO NOT USE YOUR OWN TWITTER/X ACCOUNT. USE AN ALTERNATE ACCOUNT ***
 
+MAJOR DEPENDENCY: The app requires Node.js in order to build/package/compile the app. You can download Node.js from the official site here: https://nodejs.org/en/download
+
 To begin, add a username to monitor in the Target Sources section:
 <img width="1280" height="763" alt="image" src="https://github.com/user-attachments/assets/fd0f1222-4c54-4e81-b56f-a52027e2a372" />
 
@@ -20,8 +22,6 @@ Export findings to .json or .pdf
 
 Automatically log any changes so you you can track updates made by X Listener
 <img width="2559" height="1526" alt="image" src="https://github.com/user-attachments/assets/06a44940-63d6-4e63-bdaa-47edb27122e9" />
-
-DEPENDENCY: The app requires Node.js in order to build/package/compile the app. You can download Node.js from the official site here: https://nodejs.org/en/download
 
 ### v3.4.1 avatar repair
 This release corrects a v3.4.0 profile-avatar selector that could capture the signed-in X account avatar instead of the monitored target avatar. On first launch after upgrading, the application invalidates the affected local avatar cache, recovers independently observed avatar URLs where available, and performs a one-time live refresh of monitored target profile images. Existing collected records are preserved.
