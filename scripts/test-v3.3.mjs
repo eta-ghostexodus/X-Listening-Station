@@ -23,5 +23,5 @@ assert(renderer.includes('INTEGRATED TOR'));
 assert(renderer.includes('Integrated Tor ready on demand'));
 assert(prep.includes('15.0.19'));
 assert(prep.includes('6ac067402c7b4a3dc37887ed3754b3914b67fdc220c966190683e9ccf91abf0f'));
-assert(installer.includes('npm run prepare:tor'));
+assert(installer.includes('pnpm run prepare:tor'));
 console.log('v3.3 integrated-Tor/icon/single-installer regression tests passed.');

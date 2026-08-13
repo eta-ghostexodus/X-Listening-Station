@@ -1,0 +1,14 @@
+# pnpm settings (single-package project; this file is pnpm's config home).
+# Supply-chain hardening:
+# - onlyBuiltDependencies: lifecycle scripts are blocked for every package except
+#   electron, whose postinstall downloads the hash-verified Chromium runtime.
+# - minimumReleaseAge: refuse package versions published less than 7 days ago
+#   (in minutes), so freshly compromised releases are never installed.
+onlyBuiltDependencies:
+  - electron
+minimumReleaseAge: 10080
+# @electron/rebuild pins @electron/node-gyp to a git URL, which pnpm's
+# blockExoticSubdeps guard (correctly) refuses. Force the registry-published
+# build instead; unused at build time anyway (npmRebuild: false, no native deps).
+overrides:
+  "@electron/node-gyp": "10.2.0-electron.2"

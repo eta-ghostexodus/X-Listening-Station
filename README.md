@@ -100,8 +100,8 @@ Locally retained findings and relationship records carry observation timestamps 
 Extract the complete ZIP into a new folder. For development mode, open PowerShell in that folder and run:
 
 ```powershell
-npm install --no-audit --no-fund
-npm run dev
+pnpm install --frozen-lockfile
+pnpm run dev
 ```
 
 The development launcher runs page-injection, enterprise-logic, and v3.1 campaign/Tor/media regression checks before starting Electron.
@@ -156,7 +156,7 @@ INSTALL_WINDOWS.bat
 This single helper also prepares and verifies the integrated Tor runtime before building the installer. Or run:
 
 ```powershell
-npm run dist:win
+pnpm run dist:win
 ```
 
 Output:
@@ -170,11 +170,11 @@ The generated installer is unsigned unless you configure your own Windows code-s
 ## Validation commands
 
 ```powershell
-npm run validate:page-scripts
-npm run test:enterprise
-npm run test:v3.1
-npm run typecheck
-npm run check
+pnpm run validate:page-scripts
+pnpm run test:enterprise
+pnpm run test:v3.1
+pnpm run typecheck
+pnpm run check
 ```
 
 `validate:page-scripts` is specifically intended to catch broken escaping inside Electron `executeJavaScript()` page collectors before launch/build.
@@ -194,4 +194,4 @@ MIT. See `LICENSE`.
 
 ## v3.3.0 distribution cleanup
 
-The Windows source package now exposes only one root batch file: `INSTALL_WINDOWS.bat`. Development mode is started from PowerShell with `npm run dev`. The packaged Electron entry point is again `electron/main.cjs`, and startup diagnostics remain inside the main process. `INSTALL_WINDOWS.bat` performs dependency installation, validation, Vite production build, and standard NSIS packaging in one flow.
+The Windows source package now exposes only one root batch file: `INSTALL_WINDOWS.bat`. Development mode is started from PowerShell with `pnpm run dev`. The packaged Electron entry point is again `electron/main.cjs`, and startup diagnostics remain inside the main process. `INSTALL_WINDOWS.bat` performs dependency installation, validation, Vite production build, and standard NSIS packaging in one flow.
