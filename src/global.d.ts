@@ -39,6 +39,7 @@ type XlsApi = {
   clearSession: () => Promise<{ connected: boolean }>;
   toggleTor: (enabled: boolean) => Promise<{ enabled: boolean; connected: boolean; port: number | null; exitIp: string | null; error: string | null; source?: 'integrated' | 'external' | null; bootstrapPercent?: number; bundledAvailable?: boolean }>;
   getTorStatus: () => Promise<{ enabled: boolean; connected: boolean; port: number | null; exitIp: string | null; error: string | null; source?: 'integrated' | 'external' | null; bootstrapPercent?: number; bundledAvailable?: boolean }>;
+  configureTorNetwork: (config: { mode: 'integrated' | 'external'; externalHost?: string; externalPort?: number }) => Promise<any>;
   savePreset: (preset: any) => Promise<any>;
   removePreset: (id: string) => Promise<any>;
   runPreset: (id: string) => Promise<number>;

@@ -35,6 +35,12 @@ assert(main.includes("url.pathname.toLowerCase() === '/' + currentUsername + '/p
 assert(!main.includes("Array.from(document.querySelectorAll('img[src*=\"profile_images\"]'))"), 'profile metadata must not use the first document-wide avatar');
 assert(main.includes('migrateAvatarDataIfNeeded'));
 assert(main.includes("await fs.rm(path.join(app.getPath('userData'), 'avatar-cache'), { recursive: true, force: true });"), 'upgrade must invalidate contaminated avatar cache');
+assert(main.includes("handle('tor:configure'"), 'network settings IPC must exist');
+assert(main.includes('probeSocksRoute'), 'external endpoints must be classified as Tor or plain SOCKS5, not rejected');
+assert(main.includes("appState.tor.mode === 'external'"), 'routing must branch on the configured network mode');
+assert(preload.includes('configureTorNetwork'), 'network settings must be exposed to the renderer');
+assert(renderer.includes('NETWORK SETTINGS'), 'SYSTEM tab must contain the network settings panel');
+assert(renderer.includes('SOCKS5 ROUTE (NOT TOR)'), 'non-Tor SOCKS5 routes must be labeled honestly');
 assert(main.includes('repairExistingProfileAvatars'));
 assert(main.includes('scheduleAvatarRepair'));
 assert(main.includes('await getAvatarDataUrl(profile.username, metadata.avatar, true);'), 'monitored profile avatars must be force-refreshed after migration');

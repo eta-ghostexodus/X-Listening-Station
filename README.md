@@ -122,6 +122,19 @@ The compiled Windows application now includes its own Tor runtime. Click the per
 
 The build helper downloads the official Tor Expert Bundle from the Tor Project and verifies its published SHA-256 before packaging it. The Tor route applies to the authenticated X partition and its media/network requests. A logged-in X account is still identifiable as that account; Tor routing is not equivalent to anonymity.
 
+## Network settings
+
+**SYSTEM → NETWORK SETTINGS** selects how X traffic is routed while the routing control is connected:
+
+- **Integrated Tor (default).** The bundled Tor Expert Bundle described above, started and verified automatically.
+- **Tor at an IP and port.** Route through a Tor client you operate yourself — a local daemon, Tor Browser's SOCKS port, or a Tor client on another machine — by entering its SOCKS5 host and port. The indicator shows CONNECTED OVER TOR only after the Tor Project exit check succeeds through that endpoint.
+
+Either mode stays fail-closed inside the application: X traffic is blocked until the selected route verifies, and the X partition's proxy has no direct-connection fallback.
+
+### Using a plain SOCKS5 proxy instead of Tor
+
+The external option also accepts a basic SOCKS5 proxy that is not Tor. If you are already on a VPN and are comfortable with your ability to run a proxy in a fail-closed fashion, this is a reasonable alternative: the application still forces all X traffic through the proxy and still blocks X traffic while the route is unverified, but the route is labeled **SOCKS5 ROUTE (NOT TOR)** because it carries only your VPN's protections, not Tor's. The fail-closed responsibility outside the application is yours — if your proxy or VPN silently falls back to a direct connection when the tunnel drops, the application cannot detect that from inside the SOCKS5 route.
+
 ## Image evidence collection
 
 Use the always-visible **IMAGES: ON/OFF** command-bar button for the active campaign. Individual Target Sources also expose their own image toggle. When enabled, visible post images are archived locally with source URL, collection timestamp, content type, byte size, and SHA-256 hash. Turning image collection off stops new image downloads but does not delete previously archived evidence.
