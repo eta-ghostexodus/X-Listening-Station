@@ -38,6 +38,7 @@ contextBridge.exposeInMainWorld('xls', {
   clearSession: () => ipcRenderer.invoke('session:clear'),
   toggleTor: (enabled) => ipcRenderer.invoke('tor:toggle', enabled),
   getTorStatus: () => ipcRenderer.invoke('tor:status'),
+  configureTorNetwork: (config) => ipcRenderer.invoke('tor:configure', config),
   savePreset: (preset) => ipcRenderer.invoke('presets:save', preset),
   removePreset: (id) => ipcRenderer.invoke('presets:remove', id),
   runPreset: (id) => ipcRenderer.invoke('presets:run', id),

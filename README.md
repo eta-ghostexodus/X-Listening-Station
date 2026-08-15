@@ -100,8 +100,8 @@ Locally retained findings and relationship records carry observation timestamps 
 Extract the complete ZIP into a new folder. For development mode, open PowerShell in that folder and run:
 
 ```powershell
-npm install --no-audit --no-fund
-npm run dev
+pnpm install --frozen-lockfile
+pnpm run dev
 ```
 
 The development launcher runs page-injection, enterprise-logic, and v3.1 campaign/Tor/media regression checks before starting Electron.
@@ -121,6 +121,19 @@ The authenticated Chromium session remains in Electron's isolated `persist:x-lis
 The compiled Windows application now includes its own Tor runtime. Click the persistent bottom-left **CONNECT OVER TOR** control and X Listening Station starts the bundled Tor client automatically, selects a private local SOCKS port, keeps X traffic fail-closed while Tor bootstraps, and turns the indicator green only after the Tor Project exit check succeeds. No separate Tor Browser installation is required. If the bundled runtime cannot start, an already-running verified Tor service on `9050` or `9150` can still be used as a fallback.
 
 The build helper downloads the official Tor Expert Bundle from the Tor Project and verifies its published SHA-256 before packaging it. The Tor route applies to the authenticated X partition and its media/network requests. A logged-in X account is still identifiable as that account; Tor routing is not equivalent to anonymity.
+
+## Network settings
+
+**SYSTEM → NETWORK SETTINGS** selects how X traffic is routed while the routing control is connected:
+
+- **Integrated Tor (default).** The bundled Tor Expert Bundle described above, started and verified automatically.
+- **Tor at an IP and port.** Route through a Tor client you operate yourself — a local daemon, Tor Browser's SOCKS port, or a Tor client on another machine — by entering its SOCKS5 host and port. The indicator shows CONNECTED OVER TOR only after the Tor Project exit check succeeds through that endpoint.
+
+Either mode stays fail-closed inside the application: X traffic is blocked until the selected route verifies, and the X partition's proxy has no direct-connection fallback.
+
+### Using a plain SOCKS5 proxy instead of Tor
+
+The external option also accepts a basic SOCKS5 proxy that is not Tor. If you are already on a VPN and are comfortable with your ability to run a proxy in a fail-closed fashion, this is a reasonable alternative: the application still forces all X traffic through the proxy and still blocks X traffic while the route is unverified, but the route is labeled **SOCKS5 ROUTE (NOT TOR)** because it carries only your VPN's protections, not Tor's. The fail-closed responsibility outside the application is yours — if your proxy or VPN silently falls back to a direct connection when the tunnel drops, the application cannot detect that from inside the SOCKS5 route.
 
 ## Image evidence collection
 
@@ -156,7 +169,7 @@ INSTALL_WINDOWS.bat
 This single helper also prepares and verifies the integrated Tor runtime before building the installer. Or run:
 
 ```powershell
-npm run dist:win
+pnpm run dist:win
 ```
 
 Output:
@@ -170,11 +183,11 @@ The generated installer is unsigned unless you configure your own Windows code-s
 ## Validation commands
 
 ```powershell
-npm run validate:page-scripts
-npm run test:enterprise
-npm run test:v3.1
-npm run typecheck
-npm run check
+pnpm run validate:page-scripts
+pnpm run test:enterprise
+pnpm run test:v3.1
+pnpm run typecheck
+pnpm run check
 ```
 
 `validate:page-scripts` is specifically intended to catch broken escaping inside Electron `executeJavaScript()` page collectors before launch/build.
@@ -194,4 +207,4 @@ MIT. See `LICENSE`.
 
 ## v3.3.0 distribution cleanup
 
-The Windows source package now exposes only one root batch file: `INSTALL_WINDOWS.bat`. Development mode is started from PowerShell with `npm run dev`. The packaged Electron entry point is again `electron/main.cjs`, and startup diagnostics remain inside the main process. `INSTALL_WINDOWS.bat` performs dependency installation, validation, Vite production build, and standard NSIS packaging in one flow.
+The Windows source package now exposes only one root batch file: `INSTALL_WINDOWS.bat`. Development mode is started from PowerShell with `pnpm run dev`. The packaged Electron entry point is again `electron/main.cjs`, and startup diagnostics remain inside the main process. `INSTALL_WINDOWS.bat` performs dependency installation, validation, Vite production build, and standard NSIS packaging in one flow.

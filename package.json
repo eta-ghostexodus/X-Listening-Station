@@ -9,8 +9,9 @@
   "engines": {
     "node": ">=22.12.0"
   },
+  "packageManager": "pnpm@11.1.2",
   "scripts": {
-    "dev": "npm run prepare:tor && npm run validate:page-scripts && npm run test:enterprise && npm run test:v3.1 && npm run test:v3.2 && npm run test:v3.3 && npm run test:v3.4 && node scripts/dev.mjs",
+    "dev": "pnpm run prepare:tor && pnpm run validate:page-scripts && pnpm run test:enterprise && pnpm run test:v3.1 && pnpm run test:v3.2 && pnpm run test:v3.3 && pnpm run test:v3.4 && node scripts/dev.mjs",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "validate:page-scripts": "node scripts/validate-page-scripts.mjs",
@@ -18,8 +19,8 @@
     "test:v3.1": "node scripts/test-v3.1.mjs",
     "test:v3.2": "node scripts/test-v3.2.mjs",
     "test:release": "node scripts/test-release-layout.mjs",
-    "check": "node --check electron/main.cjs && node --check electron/preload.cjs && node --check electron/enterprise.cjs && node --check scripts/prepare-tor.mjs && npm run validate:page-scripts && npm run test:enterprise && npm run test:v3.1 && npm run test:v3.2 && npm run test:v3.3 && npm run test:v3.4 && npm run test:release && tsc --noEmit",
-    "dist:win": "npm run prepare:tor && npm run check && npm run build && electron-builder --win nsis --x64",
+    "check": "node --check electron/main.cjs && node --check electron/preload.cjs && node --check electron/enterprise.cjs && node --check scripts/prepare-tor.mjs && pnpm run validate:page-scripts && pnpm run test:enterprise && pnpm run test:v3.1 && pnpm run test:v3.2 && pnpm run test:v3.3 && pnpm run test:v3.4 && pnpm run test:release && tsc --noEmit",
+    "dist:win": "pnpm run prepare:tor && pnpm run check && pnpm run build && electron-builder --win nsis --x64",
     "prepare:tor": "node scripts/prepare-tor.mjs",
     "test:v3.3": "node scripts/test-v3.3.mjs",
     "test:v3.4": "node scripts/test-v3.4.mjs"

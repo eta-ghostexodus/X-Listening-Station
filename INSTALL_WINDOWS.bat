@@ -16,15 +16,15 @@ if not exist package.json (
   exit /b 1
 )
 where node >nul 2>nul || (echo ERROR: Node.js was not found.& pause & exit /b 1)
-where npm >nul 2>nul || (echo ERROR: npm was not found.& pause & exit /b 1)
+where pnpm >nul 2>nul || (echo ERROR: pnpm was not found. Install it with: npm install -g pnpm& pause & exit /b 1)
 
 for /f "delims=" %%v in ('node -v') do echo Node: %%v
-for /f "delims=" %%v in ('npm -v') do echo npm:  %%v
+for /f "delims=" %%v in ('pnpm -v') do echo pnpm: %%v
 echo.
 
 if not exist node_modules\electron\package.json (
-  echo [1/5] Installing pinned dependencies...
-  call npm install --no-audit --no-fund
+  echo [1/5] Installing pinned dependencies from the committed lockfile...
+  call pnpm install --frozen-lockfile
   if errorlevel 1 goto :failed
 ) else (
   echo [1/5] Dependencies already installed.
@@ -32,24 +32,24 @@ if not exist node_modules\electron\package.json (
 
 echo.
 echo [2/5] Preparing integrated Tor runtime from the official Tor Project bundle...
-call npm run prepare:tor
+call pnpm run prepare:tor
 if errorlevel 1 goto :failed
 
 echo.
 echo [3/5] Validating source, Tor integration, network analysis, and renderer...
-call npm run check
+call pnpm run check
 if errorlevel 1 goto :failed
 
 if exist release rmdir /s /q release
 
 echo.
 echo [4/5] Building production renderer...
-call npm run build
+call pnpm run build
 if errorlevel 1 goto :failed
 
 echo.
 echo [5/5] Building standard Windows installer...
-call npx electron-builder --win nsis --x64
+call pnpm exec electron-builder --win nsis --x64
 if errorlevel 1 goto :failed
 
 set "INSTALLER="

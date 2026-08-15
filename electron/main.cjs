@@ -57,7 +57,7 @@ let sweepRunning = false;
 let torStatusTimer = null;
 const mediaPolicyByWebContents = new Map();
 let remoteSessionConfigured = false;
-let torRuntime = { connected: false, port: null, exitIp: null, lastCheckedAt: null, error: null, source: null, bootstrapPercent: 0, bundledAvailable: false };
+let torRuntime = { connected: false, port: null, exitIp: null, lastCheckedAt: null, error: null, source: null, bootstrapPercent: 0, bundledAvailable: false, isTor: false };
 let managedTorProcess = null;
 let managedTorPort = null;
 let torConnectPromise = null;
@@ -123,7 +123,7 @@ function defaultState() {
       archiveRelationshipMaxPasses: 160,
     },
     campaignSettings: {},
-    tor: { enabled: false, preferredPort: null },
+    tor: { enabled: false, preferredPort: null, mode: 'integrated', externalHost: '127.0.0.1', externalPort: 9050 },
     archive: {
       lastCycleAt: null,
       nextOperationIndex: 0,
@@ -232,6 +232,9 @@ function normalizeState(raw) {
     tor: {
       enabled: Boolean(raw.tor?.enabled),
       preferredPort: Number(raw.tor?.preferredPort) || null,
+      mode: raw.tor?.mode === 'external' ? 'external' : 'integrated',
+      externalHost: String(raw.tor?.externalHost || '127.0.0.1').trim() || '127.0.0.1',
+      externalPort: Math.min(65535, Math.max(1, Math.round(Number(raw.tor?.externalPort) || 9050))),
     },
     archive: {
       ...base.archive,
@@ -644,9 +647,9 @@ function configureRemoteSession(ses) {
   }
 }
 
-function testTcpPort(port, timeoutMs = 1200) {
+function testTcpPort(port, timeoutMs = 1200, host = '127.0.0.1') {
   return new Promise((resolve) => {
-    const socket = nodeNet.createConnection({ host: '127.0.0.1', port });
+    const socket = nodeNet.createConnection({ host, port });
     let settled = false;
     const done = (ok) => {
       if (settled) return;
@@ -728,6 +731,21 @@ async function verifyTorExit(ses) {
     const payload = await response.json();
     if (payload?.IsTor !== true) throw new Error('Tor Project verification did not identify this connection as Tor.');
     return { connected: true, exitIp: String(payload?.IP || '') || null };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Like verifyTorExit, but classifies the route instead of requiring Tor: a
+// user-configured external endpoint may be a plain SOCKS5 proxy rather than Tor.
+async function probeSocksRoute(ses) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await ses.fetch(TOR_CHECK_URL, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) throw new Error(`Route verification returned HTTP ${response.status}.`);
+    const payload = await response.json();
+    return { isTor: payload?.IsTor === true, exitIp: String(payload?.IP || '') || null };
   } finally {
     clearTimeout(timer);
   }
@@ -851,11 +869,36 @@ async function routeAndVerifyTor(port, source, timeoutMs = 90000) {
   throw new Error(lastError || 'Tor connection timed out.');
 }
 
+async function connectExternalRouting() {
+  const host = String(appState.tor.externalHost || '127.0.0.1');
+  const port = Math.min(65535, Math.max(1, Math.round(Number(appState.tor.externalPort) || 9050)));
+  await stopManagedTor();
+  torRuntime = { connected: false, port, exitIp: null, source: 'external', bootstrapPercent: 0, bundledAvailable: Boolean(bundledTorExecutable()), isTor: false, lastCheckedAt: nowIso(), error: `Connecting to SOCKS5 at ${host}:${port}…` };
+  emitState();
+  try {
+    if (!(await testTcpPort(port, 2500, host))) throw new Error(`No SOCKS5 service is reachable at ${host}:${port}.`);
+    const ses = await applyXProxy({
+      mode: 'fixed_servers',
+      proxyRules: `socks5://${host}:${port}`,
+      proxyBypassRules: '<local>,localhost,127.0.0.1',
+    });
+    const probe = await probeSocksRoute(ses);
+    torRuntime = { ...torRuntime, connected: true, isTor: probe.isTor, exitIp: probe.exitIp, bootstrapPercent: 100, lastCheckedAt: nowIso(), error: null };
+  } catch (error) {
+    await applyTorFailClosed();
+    torRuntime = { ...torRuntime, connected: false, isTor: false, exitIp: null, lastCheckedAt: nowIso(), error: error instanceof Error ? error.message : String(error) };
+  }
+  await persistState();
+  emitState();
+  return { ...torRuntime, enabled: true };
+}
+
 async function connectTorRouting() {
-  if (!appState.tor) appState.tor = { enabled: false, preferredPort: null };
+  if (!appState.tor) appState.tor = { ...defaultState().tor };
   appState.tor.enabled = true;
   await persistState();
   await applyTorFailClosed();
+  if (appState.tor.mode === 'external') return connectExternalRouting();
   torRuntime = {
     connected: false,
     port: null,
@@ -863,6 +906,7 @@ async function connectTorRouting() {
     source: 'integrated',
     bootstrapPercent: 0,
     bundledAvailable: Boolean(bundledTorExecutable()),
+    isTor: false,
     lastCheckedAt: nowIso(),
     error: 'Starting integrated Tor…',
   };
@@ -873,7 +917,7 @@ async function connectTorRouting() {
     const integrated = await startIntegratedTor();
     const verified = await routeAndVerifyTor(integrated.port, 'integrated', 90000);
     appState.tor.preferredPort = integrated.port;
-    torRuntime = { connected: true, port: integrated.port, exitIp: verified.exitIp, source: 'integrated', bootstrapPercent: 100, bundledAvailable: true, lastCheckedAt: nowIso(), error: null };
+    torRuntime = { connected: true, port: integrated.port, exitIp: verified.exitIp, source: 'integrated', bootstrapPercent: 100, bundledAvailable: true, isTor: true, lastCheckedAt: nowIso(), error: null };
     await persistState();
     emitState();
     return { ...torRuntime, enabled: true };
@@ -888,7 +932,7 @@ async function connectTorRouting() {
     if (!(await testTcpPort(port))) continue;
     try {
       const verified = await routeAndVerifyTor(port, 'external', 15000);
-      torRuntime = { connected: true, port, exitIp: verified.exitIp, source: 'external', bootstrapPercent: 100, bundledAvailable: Boolean(bundledTorExecutable()), lastCheckedAt: nowIso(), error: null };
+      torRuntime = { connected: true, port, exitIp: verified.exitIp, source: 'external', bootstrapPercent: 100, bundledAvailable: Boolean(bundledTorExecutable()), isTor: true, lastCheckedAt: nowIso(), error: null };
       await persistState();
       emitState();
       return { ...torRuntime, enabled: true };
@@ -898,7 +942,7 @@ async function connectTorRouting() {
   }
 
   await applyTorFailClosed();
-  torRuntime = { connected: false, port: null, exitIp: null, source: 'integrated', bootstrapPercent: 0, bundledAvailable: Boolean(bundledTorExecutable()), lastCheckedAt: nowIso(), error: lastError || 'Integrated Tor could not connect.' };
+  torRuntime = { connected: false, port: null, exitIp: null, source: 'integrated', bootstrapPercent: 0, bundledAvailable: Boolean(bundledTorExecutable()), isTor: false, lastCheckedAt: nowIso(), error: lastError || 'Integrated Tor could not connect.' };
   await persistState();
   emitState();
   return { ...torRuntime, enabled: true };
@@ -909,9 +953,9 @@ async function setTorRouting(enabled) {
     if (torConnectPromise) await Promise.race([torConnectPromise.catch(() => undefined), sleep(500)]);
     await stopManagedTor();
     await applyXProxy({ mode: 'direct' });
-    if (!appState.tor) appState.tor = { enabled: false, preferredPort: null };
+    if (!appState.tor) appState.tor = { ...defaultState().tor };
     appState.tor.enabled = false;
-    torRuntime = { connected: false, port: null, exitIp: null, source: null, bootstrapPercent: 0, bundledAvailable: Boolean(bundledTorExecutable()), lastCheckedAt: nowIso(), error: null };
+    torRuntime = { connected: false, port: null, exitIp: null, source: null, bootstrapPercent: 0, bundledAvailable: Boolean(bundledTorExecutable()), isTor: false, lastCheckedAt: nowIso(), error: null };
     await persistState();
     emitState();
     return { ...torRuntime, enabled: false };
@@ -931,10 +975,15 @@ async function refreshTorStatus() {
   }
   const ses = session.fromPartition(X_PARTITION);
   try {
-    const verified = await verifyTorExit(ses);
-    torRuntime = { ...torRuntime, connected: true, exitIp: verified.exitIp, bundledAvailable, lastCheckedAt: nowIso(), error: null };
+    if (appState.tor.mode === 'external') {
+      const probe = await probeSocksRoute(ses);
+      torRuntime = { ...torRuntime, connected: true, isTor: probe.isTor, exitIp: probe.exitIp, bundledAvailable, lastCheckedAt: nowIso(), error: null };
+    } else {
+      const verified = await verifyTorExit(ses);
+      torRuntime = { ...torRuntime, connected: true, isTor: true, exitIp: verified.exitIp, bundledAvailable, lastCheckedAt: nowIso(), error: null };
+    }
   } catch (error) {
-    torRuntime = { ...torRuntime, connected: false, exitIp: null, bundledAvailable, lastCheckedAt: nowIso(), error: error instanceof Error ? error.message : String(error) };
+    torRuntime = { ...torRuntime, connected: false, isTor: false, exitIp: null, bundledAvailable, lastCheckedAt: nowIso(), error: error instanceof Error ? error.message : String(error) };
     if (!torConnectPromise) runBackgroundTask('Integrated Tor reconnect', () => setTorRouting(true));
   }
   emitState();
@@ -1042,7 +1091,8 @@ async function ensureXRouteReadyForLogin() {
   }
 
   try {
-    await verifyTorExit(ses);
+    if (appState.tor.mode === 'external') await probeSocksRoute(ses);
+    else await verifyTorExit(ses);
   } catch (error) {
     await applyTorFailClosed();
     torRuntime = { ...torRuntime, connected: false, error: error instanceof Error ? error.message : String(error), lastCheckedAt: nowIso() };
@@ -2942,6 +2992,27 @@ function registerIpc() {
 
   handle('tor:toggle', async (enabled) => setTorRouting(Boolean(enabled)));
   handle('tor:status', async () => refreshTorStatus());
+
+  handle('tor:configure', async (input) => {
+    const mode = input?.mode === 'external' ? 'external' : 'integrated';
+    const externalHost = String(input?.externalHost ?? appState.tor?.externalHost ?? '127.0.0.1').trim();
+    const externalPort = Math.round(Number(input?.externalPort ?? appState.tor?.externalPort) || 0);
+    if (mode === 'external') {
+      if (!/^[A-Za-z0-9_.-]+$/.test(externalHost)) throw new Error('Enter a valid SOCKS5 host (IPv4 address or hostname).');
+      if (!(externalPort >= 1 && externalPort <= 65535)) throw new Error('Enter a valid SOCKS5 port (1-65535).');
+    }
+    appState.tor = {
+      ...defaultState().tor,
+      ...appState.tor,
+      mode,
+      externalHost: externalHost || '127.0.0.1',
+      externalPort: externalPort >= 1 && externalPort <= 65535 ? externalPort : 9050,
+    };
+    await persistState();
+    if (appState.tor.enabled && !torConnectPromise) return setTorRouting(true);
+    emitState();
+    return { ...torRuntime, enabled: Boolean(appState.tor.enabled), mode, externalHost: appState.tor.externalHost, externalPort: appState.tor.externalPort };
+  });
 
   handle('presets:save', async (input) => {
     const caseId = activeCaseId();
